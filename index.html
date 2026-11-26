@@ -12,23 +12,23 @@
    PICTURE: layar game itu sendiri, dibingkai bezel gelap.
    COLOUR and TYPE: indigo casing, abu tombol, aksen merah lampu daya; Rubik.
    LAYOUT: portrait = layar atas, tombol bawah; landscape = tombol mengapit layar. */
-:root{color-scheme:light dark;--case:light-dark(#4a3f9f,#2c2566);--case2:light-dark(#3b318a,#221c52);--bezel:#1d1b26;--ink:#f3f1ff;--muted:light-dark(#d4cffa,#a9a2e0);--btn:#cfccd9;--btnInk:#2a2738;--ab:#2a2550;--led:#ff4d4d;--panel:light-dark(#ffffff,#1c1a2b);--panelInk:light-dark(#1d1b26,#eeeaff)}
+:root{color-scheme:light dark;--case:#000;--case2:#1c1c1c;--bezel:#111;--ink:#fff;--muted:#bdbdbd;--btn:#fff;--btnInk:#000;--ab:#fff;--led:#ff4d4d;--panel:light-dark(#ffffff,#1c1a2b);--panelInk:light-dark(#1d1b26,#eeeaff)}
 :root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
 *{box-sizing:border-box;min-width:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%}
 body{margin:0;background:var(--case);color:var(--ink);font:16px/1.5 Rubik,system-ui,sans-serif;overflow:hidden;user-select:none;-webkit-user-select:none;touch-action:none;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
 button{font:inherit;cursor:pointer}
-.shell{height:100%;display:grid;grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr) auto;grid-template-areas:"bar" "screen" "pad";gap:10px;padding:10px 12px 14px;max-width:1100px;margin:0 auto}
+.shell{height:100%;display:grid;grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr) auto;grid-template-areas:"bar" "screen" "pad";gap:8px;padding:8px 8px 12px;margin:0 auto}
 .bar{grid-area:bar;display:flex;align-items:center;gap:8px}
 .bar h1{font-size:17px;font-weight:700;margin:0 auto 0 0;display:flex;align-items:center;gap:8px;white-space:nowrap}
 .led{width:9px;height:9px;border-radius:50%;background:#555;box-shadow:0 0 0 2px var(--case2)}
 .on .led{background:var(--led);box-shadow:0 0 10px var(--led)}
 .chip{min-height:40px;padding:0 14px;border-radius:20px;border:0;background:var(--case2);color:var(--ink);font-size:14px;font-weight:500}
 .chip:focus-visible,.pad button:focus-visible,.panel button:focus-visible{outline:3px solid #fff;outline-offset:2px}
-.screen{grid-area:screen;background:var(--bezel);border-radius:14px 14px 40px 14px;padding:14px;display:flex;flex-direction:column;box-shadow:inset 0 -4px 0 #0006,0 6px 0 var(--case2)}
+.screen{grid-area:screen;background:var(--bezel);border-radius:12px 12px 28px 12px;padding:6px 6px 4px;display:flex;flex-direction:column;box-shadow:inset 0 -4px 0 #0006,0 6px 0 var(--case2)}
 .stage{flex:1;display:grid;place-items:center;position:relative;min-height:120px}
 .stage canvas{image-rendering:pixelated;border-radius:3px;background:#000}
-.label{font-size:12px;color:#8a86a3;margin-top:8px;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.label{font-size:11px;line-height:1.2;color:#8a86a3;margin:4px 6px 0;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .intro{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;color:#dcd8f0;padding:12px;background:repeating-linear-gradient(0deg,#9bbc0f10 0 2px,transparent 2px 4px)}
 .intro[hidden],[hidden]{display:none!important}
 .intro h2{margin:0;font-size:clamp(20px,4vw,28px);line-height:1.1}
@@ -41,29 +41,55 @@ button{font:inherit;cursor:pointer}
 .lc,.rc{display:flex;flex-direction:column;align-items:center;gap:14px}
 .shoulder{width:min(150px,100%);height:44px;border:0;border-radius:22px 22px 10px 10px;background:var(--btn);color:var(--btnInk);font-weight:700}
 .dpad{position:relative;width:150px;height:150px;touch-action:none}
-.dpad i{position:absolute;background:var(--bezel);border-radius:8px;box-shadow:0 4px 0 #0005}
+.dpad i{position:absolute;background:var(--btn);border-radius:8px;box-shadow:0 4px 0 #555}
 .dpad .h{left:0;right:0;top:50px;height:50px}.dpad .v{top:0;bottom:0;left:50px;width:50px}
-.dpad b{position:absolute;width:50px;height:50px;display:grid;place-items:center;color:#6d6987;font-size:14px;pointer-events:none}
+.dpad b{position:absolute;width:50px;height:50px;display:grid;place-items:center;color:#9a9a9a;font-size:14px;pointer-events:none}
 .dpad b.u{left:50px;top:0}.dpad b.d{left:50px;bottom:0}.dpad b.l{left:0;top:50px}.dpad b.r{right:0;top:50px}
-.dpad b.on{color:#fff}
+.dpad b.on{color:#000}
 .ab{position:relative;width:160px;height:130px}
-.ab button{position:absolute;width:66px;height:66px;border-radius:50%;border:0;background:var(--ab);color:#d9d4ff;font-weight:700;font-size:20px;box-shadow:0 5px 0 #0007;touch-action:none}
+.ab button{position:absolute;width:66px;height:66px;border-radius:50%;border:0;background:var(--ab);color:#000;font-weight:700;font-size:20px;box-shadow:0 5px 0 #555;touch-action:none}
 .ab .a{right:0;top:0}.ab .b{left:0;bottom:0}
-.ab button.on,.shoulder.on,.small.on{transform:translateY(3px);box-shadow:0 2px 0 #0007;filter:brightness(1.25)}
+.ab button.on,.shoulder.on,.small.on{transform:translateY(3px);box-shadow:0 2px 0 #555;filter:brightness(.75)}
 .smalls{display:flex;gap:14px}
-.small{min-width:70px;height:28px;border-radius:14px;border:0;background:var(--case2);color:var(--muted);font-size:12px;font-weight:500;touch-action:none}
-.notouch .pad{display:none}
+.small{min-width:70px;height:28px;border-radius:14px;border:0;background:var(--btn);color:var(--btnInk);font-size:12px;font-weight:500;touch-action:none}
+body.notouch .pad{display:none}
 .notouch .shell{grid-template-rows:auto minmax(0,1fr) auto;grid-template-areas:"bar" "screen" "help"}
 .help{grid-area:help;display:none;font-size:13px;color:var(--muted);text-align:center}
 .notouch .help{display:block}
 .help kbd{background:var(--case2);border-radius:5px;padding:1px 6px;font:inherit;color:var(--ink)}
 @media (orientation:landscape) and (max-height:560px){
- .shell{grid-template-columns:minmax(150px,1fr) minmax(0,2.4fr) minmax(150px,1fr);grid-template-rows:auto minmax(0,1fr);grid-template-areas:"bar bar bar" "l screen r";padding-block:6px}
+ .shell{grid-template-columns:auto minmax(0,1fr) auto;grid-template-rows:auto minmax(0,1fr);grid-template-areas:"bar bar bar" "l screen r";padding-block:4px;gap:4px 8px}
+ .bar h1{font-size:14px}.chip{min-height:30px;padding:0 12px;font-size:13px}
+ .label{display:none}
  .pad{display:contents}
  .pad .sh.l,.lc{grid-area:l}.pad .sh.r,.rc{grid-area:r}
  .lc,.rc{justify-content:center}.pad .sh{align-self:start;justify-content:center}
- .dpad{transform:scale(.9)}.ab{transform:scale(.9)}
+ .dpad{transform:scale(.85)}.ab{transform:scale(.85)}
+ .lc,.rc{gap:6px}
 }
+/* layar penuh: sembunyikan bar & label supaya layar game sebesar mungkin */
+:fullscreen .bar,:fullscreen .label{display:none}
+:fullscreen .shell{grid-template-rows:minmax(0,1fr) auto;grid-template-areas:"screen" "pad"}
+:fullscreen .notouch .shell{grid-template-rows:minmax(0,1fr);grid-template-areas:"screen"}
+:fullscreen .notouch .help{display:none}
+.fsMenu{display:none;position:absolute;top:6px;left:50%;transform:translateX(-50%);z-index:2;width:40px;height:40px;border-radius:50%;border:0;background:#0007;color:#fff;font-size:18px;opacity:.6}
+:fullscreen .on .fsMenu{display:block}
+:fullscreen .screen{padding:0;border-radius:0;background:#000;box-shadow:none}
+@media (orientation:landscape) and (max-height:560px){:fullscreen .shell{grid-template-rows:minmax(0,1fr);grid-template-areas:"l screen r"}}
+/* mode selebar layar HP: layar game memakai seluruh ruang, tombol melayang transparan di atasnya */
+.wide .shell{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr);grid-template-areas:"bar" "screen";padding:0;gap:0}
+.wide .bar{padding:4px 8px}
+.wide .screen{padding:0;border-radius:0;box-shadow:none;background:#000}
+.wide .label{display:none}
+.wide .pad{position:fixed;inset:0;z-index:3;pointer-events:none;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr auto auto;grid-template-areas:". ." "lh rh" "lc rc";gap:10px;padding:12px max(12px,env(safe-area-inset-right)) max(16px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))}
+.wide .pad button,.wide .dpad{pointer-events:auto}
+.wide .pad .sh.l{grid-area:lh}.wide .pad .sh.r{grid-area:rh}.wide .lc{grid-area:lc}.wide .rc{grid-area:rc}
+.wide .pad .sh{align-self:end}.wide .pad .sh.l{justify-content:flex-start}.wide .pad .sh.r{justify-content:flex-end}
+.wide .pad button,.wide .dpad i{opacity:.45}
+.wide .pad button.on{opacity:.8}
+.wide .dpad b{color:#000;opacity:.6}
+@media (orientation:portrait){.wide .stage{place-items:start center}}
+@media (orientation:landscape){.wide .pad{grid-template-rows:auto 1fr auto;grid-template-areas:"lh rh" ". ." "lc rc"}.wide .pad .sh{align-self:start}}
 .veil{position:fixed;inset:0;background:#0009;display:none;align-items:center;justify-content:center;padding:16px;z-index:5}
 .veil.open{display:flex}
 .panel{background:var(--panel);color:var(--panelInk);border-radius:18px;width:min(520px,100%);max-height:100%;overflow:auto;padding:20px;user-select:text;touch-action:auto}
@@ -74,7 +100,7 @@ button{font:inherit;cursor:pointer}
 .slot .pic{aspect-ratio:3/2;border-radius:6px;background:#111 center/cover no-repeat;display:grid;place-items:center;font-size:12px;color:#888}
 .slot .meta{font-size:12px;opacity:.75;white-space:nowrap}
 .slot .row{display:flex;gap:6px}
-.slot button,.acts button{flex:1;min-height:40px;border-radius:10px;border:0;background:light-dark(#4a3f9f,#6b5fd1);color:#fff;font-weight:500;font-size:14px}
+.slot button,.acts button{flex:1;min-height:40px;border-radius:10px;border:0;background:light-dark(#000,#fff);color:light-dark(#fff,#000);font-weight:500;font-size:14px}
 .slot button.ghost,.acts button.ghost{background:transparent;color:inherit;box-shadow:inset 0 0 0 1.5px currentColor}
 .slot button:disabled{opacity:.35;cursor:default}
 .acts{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
@@ -99,6 +125,7 @@ button{font:inherit;cursor:pointer}
 
   <section class="screen">
     <div class="stage" id="stage">
+      <button class="fsMenu" id="fsMenu" aria-label="Menu">☰</button>
       <div class="intro" id="intro">
         <h2>Masukkan kaset</h2>
         <p>Pilih file ROM GBA milikmu (.gba, .gb, .gbc atau .zip). File-nya tetap di perangkat ini dan tidak diunggah ke mana pun.</p>
@@ -134,12 +161,14 @@ button{font:inherit;cursor:pointer}
       <button id="contBtn">Lanjut main</button>
       <button class="ghost" id="resetBtn">Reset</button>
       <button class="ghost" id="swapBtn">Ganti ROM</button>
+      <button class="ghost" id="fsBtn2">Layar penuh</button>
     </div>
     <div class="opts">
       <label>Volume <input type="range" id="vol" min="0" max="100" step="5"></label>
       <label>Gambar halus (tidak kotak-kotak) <input type="checkbox" id="smooth"></label>
       <label>Frame blending (efek transparan) <input type="checkbox" id="blend"></label>
       <label>Tampilkan tombol sentuh <input type="checkbox" id="touchOpt"></label>
+      <label>Layar selebar HP (tombol melayang di atas layar) <input type="checkbox" id="wideOpt"></label>
     </div>
     <div class="acts">
       <button class="ghost" id="expBtn">Ekspor save (.sav)</button>
@@ -165,10 +194,10 @@ const store = {
   set(k, v) { try { localStorage.setItem('konsolku.' + k, JSON.stringify(v)); } catch {} }
 };
 const prefs = { vol: store.get('vol', 80), smooth: store.get('smooth', false), blend: store.get('blend', true),
-  touch: store.get('touch', matchMedia('(pointer:coarse)').matches) };
+  touch: store.get('touch', matchMedia('(pointer:coarse)').matches), wide: store.get('wide', false) };
 
 const toast = msg => { const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 2200); };
-const applyTouch = () => document.body.classList.toggle('notouch', !prefs.touch);
+const applyTouch = () => { document.body.classList.toggle('notouch', !prefs.touch); document.body.classList.toggle('wide', prefs.wide); };
 applyTouch();
 
 /* ---------- OPFS helpers: ROM terakhir & file save ---------- */
@@ -296,13 +325,14 @@ function openMenu() {
   releaseAll();
   play.pause('menu');
   $('pSub').textContent = romName;
-  $('vol').value = prefs.vol; $('smooth').checked = prefs.smooth; $('blend').checked = prefs.blend; $('touchOpt').checked = prefs.touch;
+  $('vol').value = prefs.vol; $('smooth').checked = prefs.smooth; $('blend').checked = prefs.blend; $('touchOpt').checked = prefs.touch; $('wideOpt').checked = prefs.wide;
   renderSlots();
   veil.classList.add('open');
   $('contBtn').focus();
 }
 function closeMenu() { veil.classList.remove('open'); play?.resume('menu'); }
 $('menuBtn').onclick = openMenu;
+$('fsMenu').onclick = openMenu;
 $('contBtn').onclick = closeMenu;
 veil.addEventListener('pointerdown', e => { if (e.target === veil) closeMenu(); });
 window.addEventListener('keydown', e => { if (e.key === 'Escape') { veil.classList.contains('open') ? closeMenu() : openMenu(); } });
@@ -324,6 +354,7 @@ $('vol').oninput = e => { prefs.vol = +e.target.value; store.set('vol', prefs.vo
 $('smooth').onchange = e => { prefs.smooth = e.target.checked; store.set('smooth', prefs.smooth); play?.settings.write('renderFilter', prefs.smooth ? 'smooth' : 'pixelated'); };
 $('blend').onchange = e => { prefs.blend = e.target.checked; store.set('blend', prefs.blend); play?.settings.write('interframeBlending', prefs.blend); };
 $('touchOpt').onchange = e => { prefs.touch = e.target.checked; store.set('touch', prefs.touch); applyTouch(); };
+$('wideOpt').onchange = e => { prefs.wide = e.target.checked; store.set('wide', prefs.wide); applyTouch(); };
 
 /* ---------- Ekspor / impor save baterai ---------- */
 $('expBtn').onclick = async () => {
@@ -353,12 +384,15 @@ $('savIn').onchange = async e => {
 };
 
 /* ---------- Layar penuh ---------- */
-$('fsBtn').onclick = async () => {
+const toggleFs = async () => {
   try {
     if (document.fullscreenElement) await document.exitFullscreen();
     else { await document.documentElement.requestFullscreen(); try { await screen.orientation.lock('landscape'); } catch {} }
   } catch { toast('Layar penuh tidak didukung di sini'); }
 };
+$('fsBtn').onclick = toggleFs;
+$('fsBtn2').onclick = () => { closeMenu(); toggleFs(); };
+document.addEventListener('fullscreenchange', () => { const t = document.fullscreenElement ? 'Keluar layar penuh' : 'Layar penuh'; $('fsBtn').textContent = $('fsBtn2').textContent = t; });
 
 document.addEventListener('visibilitychange', () => { if (document.hidden) releaseAll(); });
 offerResume();
