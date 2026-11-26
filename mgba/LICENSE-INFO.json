@@ -1,0 +1,50 @@
+{
+  "name": "@wasm-gaming/mgba-wasm",
+  "version": "0.3.1",
+  "description": "mGBA (Game Boy Advance / Game Boy / Game Boy Color emulator) compiled to WebAssembly via Emscripten, with a JS SDK conforming to the wasm-gaming engine contract.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wasm-gaming/mGBA-wasm.git"
+  },
+  "bugs": {
+    "url": "https://github.com/wasm-gaming/mGBA-wasm/issues"
+  },
+  "homepage": "https://github.com/wasm-gaming/mGBA-wasm#readme",
+  "type": "module",
+  "main": "./dist/mgba/mgba.sdk.js",
+  "types": "./dist/mgba/mgba.sdk.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/mgba/mgba.sdk.d.ts",
+      "import": "./dist/mgba/mgba.sdk.js"
+    },
+    "./options": {
+      "types": "./dist/mgba/mgba.options.d.ts",
+      "import": "./dist/mgba/mgba.options.js"
+    },
+    "./app": {
+      "import": "./dist/mgba/app/app.js"
+    }
+  },
+  "files": [
+    "dist/mgba/",
+    "src/app/",
+    "src/mgba.config.ts",
+    "src/mgba.core.ts",
+    "src/mgba.options.ts",
+    "src/mgba.sdk.ts",
+    "src/mgba.zip.ts",
+    "README.md"
+  ],
+  "comment:scripts": "Build logic lives in the Makefile, not here (make build / build-sdk / build-wasm / preview).",
+  "scripts": {},
+  "comment:dependencies": "engine-specs is the one wasm-gaming package an engine depends on. Its runtime is also copied into dist/mgba/ and imported relatively, so the built SDK loads without a bundler or an import map; the dependency carries the types.",
+  "dependencies": {
+    "@wasm-gaming/engine-specs": "^0.6.2"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0"
+  },
+  "engineContract": "https://github.com/wasm-gaming/engine-specs",
+  "license": "MPL-2.0"
+}

@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Konsolku GBA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE: santai, seperti mainan yang dipegang sendiri.
+   IDEA: casing konsol genggam indigo; layar di tengah, tombol fisik di sisi.
+   PICTURE: layar game itu sendiri, dibingkai bezel gelap.
+   COLOUR and TYPE: indigo casing, abu tombol, aksen merah lampu daya; Rubik.
+   LAYOUT: portrait = layar atas, tombol bawah; landscape = tombol mengapit layar. */
+:root{color-scheme:light dark;--case:light-dark(#4a3f9f,#2c2566);--case2:light-dark(#3b318a,#221c52);--bezel:#1d1b26;--ink:#f3f1ff;--muted:light-dark(#d4cffa,#a9a2e0);--btn:#cfccd9;--btnInk:#2a2738;--ab:#2a2550;--led:#ff4d4d;--panel:light-dark(#ffffff,#1c1a2b);--panelInk:light-dark(#1d1b26,#eeeaff)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{margin:0;background:var(--case);color:var(--ink);font:16px/1.5 Rubik,system-ui,sans-serif;overflow:hidden;user-select:none;-webkit-user-select:none;touch-action:none;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+button{font:inherit;cursor:pointer}
+.shell{height:100%;display:grid;grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr) auto;grid-template-areas:"bar" "screen" "pad";gap:10px;padding:10px 12px 14px;max-width:1100px;margin:0 auto}
+.bar{grid-area:bar;display:flex;align-items:center;gap:8px}
+.bar h1{font-size:17px;font-weight:700;margin:0 auto 0 0;display:flex;align-items:center;gap:8px;white-space:nowrap}
+.led{width:9px;height:9px;border-radius:50%;background:#555;box-shadow:0 0 0 2px var(--case2)}
+.on .led{background:var(--led);box-shadow:0 0 10px var(--led)}
+.chip{min-height:40px;padding:0 14px;border-radius:20px;border:0;background:var(--case2);color:var(--ink);font-size:14px;font-weight:500}
+.chip:focus-visible,.pad button:focus-visible,.panel button:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.screen{grid-area:screen;background:var(--bezel);border-radius:14px 14px 40px 14px;padding:14px;display:flex;flex-direction:column;box-shadow:inset 0 -4px 0 #0006,0 6px 0 var(--case2)}
+.stage{flex:1;display:grid;place-items:center;position:relative;min-height:120px}
+.stage canvas{image-rendering:pixelated;border-radius:3px;background:#000}
+.label{font-size:12px;color:#8a86a3;margin-top:8px;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.intro{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;color:#dcd8f0;padding:12px;background:repeating-linear-gradient(0deg,#9bbc0f10 0 2px,transparent 2px 4px)}
+.intro[hidden],[hidden]{display:none!important}
+.intro h2{margin:0;font-size:clamp(20px,4vw,28px);line-height:1.1}
+.intro p{margin:0;font-size:14px;color:#a9a5c0;max-width:34ch}
+.big{min-height:48px;padding:0 22px;border-radius:24px;border:0;background:var(--btn);color:var(--btnInk);font-weight:700;font-size:16px}
+.big.alt{background:transparent;color:#dcd8f0;box-shadow:inset 0 0 0 2px #dcd8f066}
+.drop{outline:3px dashed #9bbc0f;outline-offset:-8px}
+.pad{grid-area:pad;display:grid;grid-template-columns:1fr 1fr;grid-template-areas:"lh rh" "lc rc";gap:10px 16px;align-items:center}
+.pad .sh{display:flex}.pad .sh.r{justify-content:flex-end}
+.lc,.rc{display:flex;flex-direction:column;align-items:center;gap:14px}
+.shoulder{width:min(150px,100%);height:44px;border:0;border-radius:22px 22px 10px 10px;background:var(--btn);color:var(--btnInk);font-weight:700}
+.dpad{position:relative;width:150px;height:150px;touch-action:none}
+.dpad i{position:absolute;background:var(--bezel);border-radius:8px;box-shadow:0 4px 0 #0005}
+.dpad .h{left:0;right:0;top:50px;height:50px}.dpad .v{top:0;bottom:0;left:50px;width:50px}
+.dpad b{position:absolute;width:50px;height:50px;display:grid;place-items:center;color:#6d6987;font-size:14px;pointer-events:none}
+.dpad b.u{left:50px;top:0}.dpad b.d{left:50px;bottom:0}.dpad b.l{left:0;top:50px}.dpad b.r{right:0;top:50px}
+.dpad b.on{color:#fff}
+.ab{position:relative;width:160px;height:130px}
+.ab button{position:absolute;width:66px;height:66px;border-radius:50%;border:0;background:var(--ab);color:#d9d4ff;font-weight:700;font-size:20px;box-shadow:0 5px 0 #0007;touch-action:none}
+.ab .a{right:0;top:0}.ab .b{left:0;bottom:0}
+.ab button.on,.shoulder.on,.small.on{transform:translateY(3px);box-shadow:0 2px 0 #0007;filter:brightness(1.25)}
+.smalls{display:flex;gap:14px}
+.small{min-width:70px;height:28px;border-radius:14px;border:0;background:var(--case2);color:var(--muted);font-size:12px;font-weight:500;touch-action:none}
+.notouch .pad{display:none}
+.notouch .shell{grid-template-rows:auto minmax(0,1fr) auto;grid-template-areas:"bar" "screen" "help"}
+.help{grid-area:help;display:none;font-size:13px;color:var(--muted);text-align:center}
+.notouch .help{display:block}
+.help kbd{background:var(--case2);border-radius:5px;padding:1px 6px;font:inherit;color:var(--ink)}
+@media (orientation:landscape) and (max-height:560px){
+ .shell{grid-template-columns:minmax(150px,1fr) minmax(0,2.4fr) minmax(150px,1fr);grid-template-rows:auto minmax(0,1fr);grid-template-areas:"bar bar bar" "l screen r";padding-block:6px}
+ .pad{display:contents}
+ .pad .sh.l,.lc{grid-area:l}.pad .sh.r,.rc{grid-area:r}
+ .lc,.rc{justify-content:center}.pad .sh{align-self:start;justify-content:center}
+ .dpad{transform:scale(.9)}.ab{transform:scale(.9)}
+}
+.veil{position:fixed;inset:0;background:#0009;display:none;align-items:center;justify-content:center;padding:16px;z-index:5}
+.veil.open{display:flex}
+.panel{background:var(--panel);color:var(--panelInk);border-radius:18px;width:min(520px,100%);max-height:100%;overflow:auto;padding:20px;user-select:text;touch-action:auto}
+.panel h3{margin:0 0 4px;font-size:22px}
+.panel .sub{margin:0 0 14px;font-size:14px;opacity:.7}
+.slots{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:16px}
+.slot{border-radius:12px;background:light-dark(#f0eef8,#29263d);padding:8px;display:flex;flex-direction:column;gap:6px}
+.slot .pic{aspect-ratio:3/2;border-radius:6px;background:#111 center/cover no-repeat;display:grid;place-items:center;font-size:12px;color:#888}
+.slot .meta{font-size:12px;opacity:.75;white-space:nowrap}
+.slot .row{display:flex;gap:6px}
+.slot button,.acts button{flex:1;min-height:40px;border-radius:10px;border:0;background:light-dark(#4a3f9f,#6b5fd1);color:#fff;font-weight:500;font-size:14px}
+.slot button.ghost,.acts button.ghost{background:transparent;color:inherit;box-shadow:inset 0 0 0 1.5px currentColor}
+.slot button:disabled{opacity:.35;cursor:default}
+.acts{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.acts button{flex:1 1 140px}
+.opts{display:grid;gap:10px;margin-bottom:14px;font-size:15px}
+.opts label{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.opts input[type=checkbox]{width:22px;height:22px}
+.opts input[type=range]{width:50%}
+.note{font-size:13px;opacity:.7;margin:0}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#000c;color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:9}
+.toast.show{opacity:1}
+@media (prefers-reduced-motion:reduce){.toast{transition:none}}
+</style>
+</head>
+<body>
+<div class="shell" id="shell">
+  <header class="bar">
+    <h1><span class="led"></span>Konsolku</h1>
+    <button class="chip" id="menuBtn" disabled>Menu</button>
+    <button class="chip" id="fsBtn">Layar penuh</button>
+  </header>
+
+  <section class="screen">
+    <div class="stage" id="stage">
+      <div class="intro" id="intro">
+        <h2>Masukkan kaset</h2>
+        <p>Pilih file ROM GBA milikmu (.gba, .gb, .gbc atau .zip). File-nya tetap di perangkat ini dan tidak diunggah ke mana pun.</p>
+        <button class="big" id="pickBtn">Pilih ROM</button>
+        <button class="big alt" id="resumeBtn" hidden></button>
+      </div>
+    </div>
+    <div class="label" id="label">GAME BOY ADVANCE · mGBA</div>
+  </section>
+
+  <section class="pad" aria-label="Kontrol sentuh">
+    <div class="sh l"><button class="shoulder" data-k="KeyA">L</button></div>
+    <div class="sh r"><button class="shoulder" data-k="KeyS">R</button></div>
+    <div class="lc">
+      <div class="dpad" id="dpad"><i class="h"></i><i class="v"></i><b class="u">▲</b><b class="d">▼</b><b class="l">◀</b><b class="r">▶</b></div>
+      <div class="smalls"><button class="small" data-k="ShiftRight">SELECT</button></div>
+    </div>
+    <div class="rc">
+      <div class="ab"><button class="b" data-k="KeyZ">B</button><button class="a" data-k="KeyX">A</button></div>
+      <div class="smalls"><button class="small" data-k="Enter">START</button></div>
+    </div>
+  </section>
+
+  <p class="help">Panah = D-pad · <kbd>X</kbd> A · <kbd>Z</kbd> B · <kbd>A</kbd> L · <kbd>S</kbd> R · <kbd>Enter</kbd> Start · <kbd>Shift kanan</kbd> Select · <kbd>Esc</kbd> Menu · gamepad juga bisa</p>
+</div>
+
+<div class="veil" id="veil">
+  <div class="panel" role="dialog" aria-modal="true" aria-labelledby="pTitle">
+    <h3 id="pTitle">Dijeda</h3>
+    <p class="sub" id="pSub"></p>
+    <div class="slots" id="slots"></div>
+    <div class="acts">
+      <button id="contBtn">Lanjut main</button>
+      <button class="ghost" id="resetBtn">Reset</button>
+      <button class="ghost" id="swapBtn">Ganti ROM</button>
+    </div>
+    <div class="opts">
+      <label>Volume <input type="range" id="vol" min="0" max="100" step="5"></label>
+      <label>Gambar halus (tidak kotak-kotak) <input type="checkbox" id="smooth"></label>
+      <label>Frame blending (efek transparan) <input type="checkbox" id="blend"></label>
+      <label>Tampilkan tombol sentuh <input type="checkbox" id="touchOpt"></label>
+    </div>
+    <div class="acts">
+      <button class="ghost" id="expBtn">Ekspor save (.sav)</button>
+      <button class="ghost" id="impBtn">Impor save (.sav)</button>
+    </div>
+    <p class="note">Save in-game tersimpan otomatis di browser ini. Ekspor berguna untuk backup atau pindah perangkat.</p>
+  </div>
+</div>
+
+<input type="file" id="romIn" accept=".gba,.gb,.gbc,.sgb,.zip" hidden>
+<input type="file" id="savIn" accept=".sav,.srm,.bin" hidden>
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import MgbaSDK from './mgba/mgba.sdk.js';
+{
+const $ = id => document.getElementById(id);
+const stage = $('stage'), intro = $('intro'), veil = $('veil');
+let play = null, romBlob = null, romName = '', toastT;
+
+const store = {
+  get(k, d) { try { const v = localStorage.getItem('konsolku.' + k); return v === null ? d : JSON.parse(v); } catch { return d; } },
+  set(k, v) { try { localStorage.setItem('konsolku.' + k, JSON.stringify(v)); } catch {} }
+};
+const prefs = { vol: store.get('vol', 80), smooth: store.get('smooth', false), blend: store.get('blend', true),
+  touch: store.get('touch', matchMedia('(pointer:coarse)').matches) };
+
+const toast = msg => { const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 2200); };
+const applyTouch = () => document.body.classList.toggle('notouch', !prefs.touch);
+applyTouch();
+
+/* ---------- OPFS helpers: ROM terakhir & file save ---------- */
+async function dir(path, create = true) {
+  let d = await navigator.storage.getDirectory();
+  for (const p of path.split('/').filter(Boolean)) d = await d.getDirectoryHandle(p, { create });
+  return d;
+}
+async function writeFile(path, name, data) {
+  const f = await (await dir(path)).getFileHandle(name, { create: true });
+  const w = await f.createWritable(); await w.write(data); await w.close();
+}
+async function readFile(path, name) {
+  try { return await (await (await dir(path, false)).getFileHandle(name)).getFile(); } catch { return null; }
+}
+const nsOf = name => name.replace(/\.(gba|gbc|gb|sgb|zip)$/i, '') || 'game';
+
+async function offerResume() {
+  const last = store.get('lastRom', null);
+  if (!last) return;
+  const f = await readFile('konsolku/roms', 'last.bin');
+  if (!f) return;
+  const b = $('resumeBtn');
+  b.textContent = 'Lanjutkan: ' + last;
+  b.hidden = false;
+  b.onclick = () => boot(f, last);
+}
+
+/* ---------- Boot ---------- */
+async function boot(blob, name) {
+  intro.hidden = true;
+  $('label').textContent = 'Memuat ' + name + '…';
+  try {
+    if (play) { await play.destroy(); play = null; }
+    stage.querySelectorAll('canvas').forEach(c => c.remove());
+    romBlob = blob; romName = name;
+    play = await new MgbaSDK()
+      .options({ aspect: 'native', renderFilter: prefs.smooth ? 'smooth' : 'pixelated', interframeBlending: prefs.blend, volume: prefs.vol / 100 })
+      .assets({ rom: () => blob.arrayBuffer() })
+      .storage({ namespace: nsOf(name) })
+      .mount(stage)
+      .start();
+    document.body.classList.add('on');
+    $('menuBtn').disabled = false;
+    $('label').textContent = name;
+    store.set('lastRom', name);
+    writeFile('konsolku/roms', 'last.bin', blob).catch(() => {});
+  } catch (e) {
+    console.error(e);
+    play = null;
+    document.body.classList.remove('on');
+    intro.hidden = false;
+    $('label').textContent = 'Gagal memuat ROM';
+    toast('ROM tidak bisa dijalankan: ' + (e?.message || e));
+  }
+}
+
+$('pickBtn').onclick = () => $('romIn').click();
+$('romIn').onchange = e => { const f = e.target.files[0]; if (f) boot(f, f.name); e.target.value = ''; };
+stage.addEventListener('dragover', e => { e.preventDefault(); stage.classList.add('drop'); });
+stage.addEventListener('dragleave', () => stage.classList.remove('drop'));
+stage.addEventListener('drop', e => { e.preventDefault(); stage.classList.remove('drop'); const f = e.dataTransfer.files[0]; if (f) boot(f, f.name); });
+
+/* ---------- Input sentuh -> event keyboard yang dibaca emulator ---------- */
+const held = new Map(); // code -> jumlah sumber yang menahan
+function press(code, down) {
+  const n = (held.get(code) || 0) + (down ? 1 : -1);
+  const was = held.get(code) || 0;
+  held.set(code, Math.max(0, n));
+  if (down && was === 0) window.dispatchEvent(new KeyboardEvent('keydown', { code, bubbles: true }));
+  if (!down && n <= 0 && was > 0) window.dispatchEvent(new KeyboardEvent('keyup', { code, bubbles: true }));
+}
+document.querySelectorAll('[data-k]').forEach(btn => {
+  const code = btn.dataset.k; let active = false;
+  const on = e => { e.preventDefault(); if (active) return; active = true; btn.classList.add('on'); press(code, true); btn.setPointerCapture?.(e.pointerId); navigator.vibrate?.(8); };
+  const off = () => { if (!active) return; active = false; btn.classList.remove('on'); press(code, false); };
+  btn.addEventListener('pointerdown', on);
+  ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(t => btn.addEventListener(t, off));
+  btn.addEventListener('contextmenu', e => e.preventDefault());
+});
+
+// D-pad: geser jari antar arah, termasuk diagonal
+const dpad = $('dpad');
+const DIRS = { u: 'ArrowUp', d: 'ArrowDown', l: 'ArrowLeft', r: 'ArrowRight' };
+let dpadNow = new Set(), dpadId = null;
+function setDpad(next) {
+  for (const k of dpadNow) if (!next.has(k)) { press(DIRS[k], false); dpad.querySelector('.' + k).classList.remove('on'); }
+  for (const k of next) if (!dpadNow.has(k)) { press(DIRS[k], true); dpad.querySelector('.' + k).classList.add('on'); }
+  if (next.size > dpadNow.size) navigator.vibrate?.(6);
+  dpadNow = next;
+}
+function dpadAt(e) {
+  const r = dpad.getBoundingClientRect();
+  const x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
+  const s = new Set();
+  if (Math.hypot(x, y) < .1) return s;
+  const ang = Math.atan2(y, x) * 180 / Math.PI; // 0 = kanan, 90 = bawah
+  if (ang > -67.5 && ang < 67.5) s.add('r');
+  if (ang > 112.5 || ang < -112.5) s.add('l');
+  if (ang > 22.5 && ang < 157.5) s.add('d');
+  if (ang < -22.5 && ang > -157.5) s.add('u');
+  return s;
+}
+dpad.addEventListener('pointerdown', e => { e.preventDefault(); dpadId = e.pointerId; dpad.setPointerCapture(e.pointerId); setDpad(dpadAt(e)); });
+dpad.addEventListener('pointermove', e => { if (e.pointerId === dpadId) setDpad(dpadAt(e)); });
+['pointerup', 'pointercancel', 'lostpointercapture'].forEach(t => dpad.addEventListener(t, e => { if (e.pointerId === dpadId) { dpadId = null; setDpad(new Set()); } }));
+const releaseAll = () => { setDpad(new Set()); for (const [code, n] of held) if (n > 0) { held.set(code, 1); press(code, false); } document.querySelectorAll('.on[data-k]').forEach(b => b.classList.remove('on')); };
+
+/* ---------- Menu jeda ---------- */
+const urls = [];
+function renderSlots() {
+  urls.splice(0).forEach(u => URL.revokeObjectURL(u));
+  const list = play.states.list();
+  $('slots').innerHTML = list.map(s => {
+    let bg = '';
+    if (s.thumbnail) { const u = URL.createObjectURL(s.thumbnail); urls.push(u); bg = `style="background-image:url(${u})"`; }
+    const when = s.savedAt ? s.savedAt.toLocaleString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : 'Kosong';
+    return `<div class="slot"><div class="pic" ${bg}>${s.savedAt ? '' : 'Slot ' + (s.slot + 1)}</div>
+      <div class="meta">Slot ${s.slot + 1} · ${when}</div>
+      <div class="row"><button data-save="${s.slot}">Simpan</button><button class="ghost" data-load="${s.slot}" ${s.savedAt ? '' : 'disabled'}>Muat</button></div></div>`;
+  }).join('');
+}
+function openMenu() {
+  if (!play || veil.classList.contains('open')) return;
+  releaseAll();
+  play.pause('menu');
+  $('pSub').textContent = romName;
+  $('vol').value = prefs.vol; $('smooth').checked = prefs.smooth; $('blend').checked = prefs.blend; $('touchOpt').checked = prefs.touch;
+  renderSlots();
+  veil.classList.add('open');
+  $('contBtn').focus();
+}
+function closeMenu() { veil.classList.remove('open'); play?.resume('menu'); }
+$('menuBtn').onclick = openMenu;
+$('contBtn').onclick = closeMenu;
+veil.addEventListener('pointerdown', e => { if (e.target === veil) closeMenu(); });
+window.addEventListener('keydown', e => { if (e.key === 'Escape') { veil.classList.contains('open') ? closeMenu() : openMenu(); } });
+
+$('slots').addEventListener('click', async e => {
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.save !== undefined) {
+    try { await play.states.save(+b.dataset.save, { thumbnail: await play.snapshot() }); renderSlots(); toast('Tersimpan di slot ' + (+b.dataset.save + 1)); }
+    catch (err) { toast('Gagal menyimpan: ' + (err?.message || err)); }
+  } else if (b.dataset.load !== undefined) {
+    if (play.states.load(+b.dataset.load)) { toast('Slot ' + (+b.dataset.load + 1) + ' dimuat'); closeMenu(); }
+    else toast('State ini tidak cocok dengan game yang berjalan');
+  }
+});
+$('resetBtn').onclick = async () => { veil.classList.remove('open'); await play.restart(); play.resume('menu'); toast('Konsol di-reset'); };
+$('swapBtn').onclick = () => { veil.classList.remove('open'); play.resume('menu'); $('romIn').click(); };
+
+$('vol').oninput = e => { prefs.vol = +e.target.value; store.set('vol', prefs.vol); play?.settings.write('volume', prefs.vol / 100); };
+$('smooth').onchange = e => { prefs.smooth = e.target.checked; store.set('smooth', prefs.smooth); play?.settings.write('renderFilter', prefs.smooth ? 'smooth' : 'pixelated'); };
+$('blend').onchange = e => { prefs.blend = e.target.checked; store.set('blend', prefs.blend); play?.settings.write('interframeBlending', prefs.blend); };
+$('touchOpt').onchange = e => { prefs.touch = e.target.checked; store.set('touch', prefs.touch); applyTouch(); };
+
+/* ---------- Ekspor / impor save baterai ---------- */
+$('expBtn').onclick = async () => {
+  try {
+    await play.flushSaves();
+    const f = await readFile(play.storagePath, 'sram.bin');
+    if (!f || !f.size) return toast('Belum ada save in-game untuk game ini');
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(f); a.download = nsOf(romName) + '.sav';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    toast('Save diekspor');
+  } catch (err) { toast('Ekspor gagal: ' + (err?.message || err)); }
+};
+$('impBtn').onclick = () => $('savIn').click();
+$('savIn').onchange = async e => {
+  const f = e.target.files[0]; e.target.value = '';
+  if (!f || !play) return;
+  try {
+    veil.classList.remove('open');
+    const path = play.storagePath;
+    await play.destroy(); play = null;           // flush dulu, baru ditimpa
+    await writeFile(path, 'sram.bin', await f.arrayBuffer());
+    await boot(romBlob, romName);
+    toast('Save diimpor, game dimulai ulang');
+  } catch (err) { toast('Impor gagal: ' + (err?.message || err)); }
+};
+
+/* ---------- Layar penuh ---------- */
+$('fsBtn').onclick = async () => {
+  try {
+    if (document.fullscreenElement) await document.exitFullscreen();
+    else { await document.documentElement.requestFullscreen(); try { await screen.orientation.lock('landscape'); } catch {} }
+  } catch { toast('Layar penuh tidak didukung di sini'); }
+};
+
+document.addEventListener('visibilitychange', () => { if (document.hidden) releaseAll(); });
+offerResume();
+}
+</script>
+</body>
+</html>
